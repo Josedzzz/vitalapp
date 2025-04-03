@@ -6,6 +6,7 @@ export interface PatientSchema {
   lastName: string;
   direction: string;
   email: string;
+  password: string;
 }
 
 export const Patients = db.collection<PatientSchema>("patients");

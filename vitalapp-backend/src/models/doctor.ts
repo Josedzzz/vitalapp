@@ -5,6 +5,7 @@ export interface DoctorSchema {
   name: string;
   lastName: string;
   specialization: string;
+  password: string;
 }
 
 export const Doctors = db.collection<DoctorSchema>("doctors");
