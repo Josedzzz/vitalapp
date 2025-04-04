@@ -3,6 +3,8 @@ import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { Patients } from "../models/patient.ts";
 import { errorResponse } from "../utils/response.ts";
 import { compare } from "npm:bcryptjs";
+import { verifyJwt } from "../utils/jwt.ts";
+import { ObjectId } from "npm:mongodb";
 
 // validation scheme
 const signupSchema = z.object({
@@ -79,4 +81,39 @@ export const validateLogin = async (
   ctx.state.validatedBody = result.data;
   ctx.state.patient = patient;
   await next();
+};
+
+export const jwtPatientsMiddleware = async (
+  ctx: Context,
+  next: () => Promise<unknown>,
+) => {
+  const bearerToken = ctx.request.headers.get("Authorization");
+  if (!bearerToken) {
+    ctx.response.status = Status.Unauthorized;
+    ctx.response.body = { error: "Unauthorized - No Token" };
+    return;
+  }
+  const token = bearerToken.split(" ")[1];
+  if (!token) {
+    ctx.response.status = Status.Unauthorized;
+    ctx.response.body = { error: "Unauthorized - Invalid Token Format" };
+    return;
+  }
+  try {
+    const decodedToken = await verifyJwt(token);
+    console.log("Decoded Token:", decodedToken);
+    const userId = new ObjectId(decodedToken.sub);
+    const patient = await Patients.findOne({ _id: userId });
+    if (!patient) {
+      ctx.response.status = Status.Unauthorized;
+      ctx.response.body = { error: "Unauthorized - Patient Not Found" };
+      return;
+    }
+    ctx.state.patient = patient;
+    await next();
+  } catch (error) {
+    console.error("JWT Verification Error:", error);
+    ctx.response.status = Status.Unauthorized;
+    ctx.response.body = { error: "Invalid Token" };
+  }
 };
