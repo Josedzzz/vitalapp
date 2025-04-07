@@ -5,6 +5,7 @@ import { errorResponse } from "../utils/response.ts";
 import { compare } from "npm:bcryptjs";
 import { verifyJwt } from "../utils/jwt.ts";
 import { ObjectId } from "npm:mongodb";
+import { Doctors } from "../models/doctor.ts";
 
 // validation scheme
 const signupSchema = z.object({
@@ -83,6 +84,7 @@ export const validateLogin = async (
   await next();
 };
 
+// middleware to validate the jwt token for a patient
 export const jwtPatientsMiddleware = async (
   ctx: Context,
   next: () => Promise<unknown>,
@@ -116,4 +118,40 @@ export const jwtPatientsMiddleware = async (
     ctx.response.status = Status.Unauthorized;
     ctx.response.body = { error: "Invalid Token" };
   }
+};
+
+// middleware to validate login data for a doctor
+export const validateDoctorLogin = async (
+  ctx: Context,
+  next: () => Promise<unknown>,
+) => {
+  const body = await ctx.request.body({ type: "json" }).value;
+  const result = loginSchema.safeParse(body);
+  if (!result.success) {
+    const message = result.error.errors[0].message;
+    ctx.response.status = Status.BadRequest;
+    ctx.response.body = errorResponse("VALIDATION_ERROR", message);
+    return;
+  }
+  const doctor = await Doctors.findOne({ email: body.email });
+  if (!doctor) {
+    ctx.response.status = Status.Unauthorized;
+    ctx.response.body = errorResponse(
+      "INVALID_CREDENTIALS",
+      "Invalid email or password",
+    );
+    return;
+  }
+  const isPasswordValid = await compare(body.password, doctor.password);
+  if (!isPasswordValid) {
+    ctx.response.status = Status.Unauthorized;
+    ctx.response.body = errorResponse(
+      "INVALID_CREDENTIALS",
+      "Invalid email or password",
+    );
+    return;
+  }
+  ctx.state.validatedBody = result.data;
+  ctx.state.doctor = doctor;
+  await next();
 };

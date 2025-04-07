@@ -1,7 +1,7 @@
-import { hash } from "npm:bcryptjs";
+import { hash, compare } from "npm:bcryptjs";
 import { CreatedPatient, Patients, PatientSchema } from "../models/patient.ts";
-import { compare } from "npm:bcryptjs";
 import { generateJwt } from "../utils/jwt.ts";
+import { Doctors } from "../models/doctor.ts";
 
 /**
  * handles the business logic for creating a new patient
@@ -47,4 +47,27 @@ export const loginService = async (
   const userId = patient._id.toString();
   const token = await generateJwt(patient._id.toString());
   return { userId, token };
+};
+
+/**
+ * handles the login for a doctor
+ * @param email - the email of the doctor
+ * @param password - the provided password
+ * @returns the userId and the jwt token for a doctor
+ */
+export const loginDoctorService = async (
+  email: string,
+  password: string,
+): Promise<{ doctorId: string; token: string }> => {
+  const doctor = await Doctors.findOne({ email });
+  if (!doctor) {
+    throw new Error("Invalid credentials");
+  }
+  const isMatch = await compare(password, doctor.password);
+  if (!isMatch) {
+    throw new Error("Invalid credentials");
+  }
+  const doctorId = doctor._id.toString();
+  const token = await generateJwt(doctor._id.toString());
+  return { doctorId, token };
 };
