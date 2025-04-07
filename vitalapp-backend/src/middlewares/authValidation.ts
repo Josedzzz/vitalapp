@@ -155,3 +155,38 @@ export const validateDoctorLogin = async (
   ctx.state.doctor = doctor;
   await next();
 };
+
+// middleware to validate the jwt token for a doctor
+export const jwtDoctorsMiddleware = async (
+  ctx: Context,
+  next: () => Promise<unknown>,
+) => {
+  const bearerToken = ctx.request.headers.get("Authorization");
+  if (!bearerToken) {
+    ctx.response.status = Status.Unauthorized;
+    ctx.response.body = { error: "Unauthorized - No Token" };
+    return;
+  }
+  const token = bearerToken.split(" ")[1];
+  if (!token) {
+    ctx.response.status = Status.Unauthorized;
+    ctx.response.body = { error: "Unauthorized - Invalid Token Format" };
+    return;
+  }
+  try {
+    const decodedToken = await verifyJwt(token);
+    const doctorId = new ObjectId(decodedToken.sub);
+    const doctor = await Doctors.findOne({ _id: doctorId });
+    if (!doctor) {
+      ctx.response.status = Status.Unauthorized;
+      ctx.response.body = { error: "Unauthorized - Doctor Not Found" };
+      return;
+    }
+    ctx.state.doctor = doctor;
+    await next();
+  } catch (error) {
+    console.error("JWT Verification Error:", error);
+    ctx.response.status = Status.Unauthorized;
+    ctx.response.body = { error: "Invalid Token" };
+  }
+};

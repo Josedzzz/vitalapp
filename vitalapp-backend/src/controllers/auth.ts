@@ -63,7 +63,6 @@ export const loginDoctorController = async (ctx: Context): Promise<void> => {
 // controller to check if a patient is auth
 export const checkAuthController = (context: Context) => {
   const token = context.request.headers.get("Authorization")?.split(" ")[1];
-  console.log(token);
   context.response.status = 200;
   context.response.body = { token };
 };
