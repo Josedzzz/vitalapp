@@ -12,6 +12,8 @@ import {
   loginDoctorController,
   signUpController,
 } from "../controllers/auth.ts";
+import { validateAgenda } from "../middlewares/doctorValidation.ts";
+import { assignAgendaController } from "../controllers/doctors.ts";
 
 const router = new Router();
 
@@ -26,5 +28,13 @@ router.get("/auth/check-doc", jwtDoctorsMiddleware, checkAuthController);
 router.get("/api/health", (ctx) => {
   ctx.response.body = { success: true, message: "API is up and running" };
 });
+
+// doctor routes
+router.post(
+  "/doc/agenda",
+  jwtDoctorsMiddleware,
+  validateAgenda,
+  assignAgendaController,
+);
 
 export default router;

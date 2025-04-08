@@ -1,30 +1,29 @@
-import { Doctors, DoctorSchema } from "../models/doctor.ts";
-import { ObjectId } from "https://deno.land/x/mongo@v0.31.2/mod.ts";
+import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { assignAppointmentService } from "../services/doctorService.ts";
+import { successResponse, errorResponse, AppError } from "../utils/response.ts";
 
-// create a doctor
-export const createDoctor = async (doctorData: DoctorSchema) => {
-  return await Doctors.insertOne(doctorData);
-};
-
-// gets all the doctors
-export const getDoctors = async () => {
-  return await Doctors.find().toArray();
-};
-
-// gets a doctor by the id
-export const getDoctorById = async (id: string) => {
-  return await Doctors.findOne({ _id: new ObjectId(id) });
-};
-
-// updates a doctor by the id
-export const updateDoctor = async (id: string, doctorData: DoctorSchema) => {
-  return await Doctors.updateOne(
-    { _id: new ObjectId(id) },
-    { $set: doctorData },
-  );
-};
-
-// deletes a doctor by the id
-export const deleteDoctor = async (id: string) => {
-  return await Doctors.deleteOne({ _id: new ObjectId(id) });
+// controller to asign an agenda
+export const assignAgendaController = async (ctx: Context): Promise<void> => {
+  try {
+    const { patientEmail, doctorId, date, startTime, endTime } =
+      await ctx.request.body({
+        type: "json",
+      }).value;
+    const agenda = await assignAppointmentService(
+      patientEmail,
+      doctorId,
+      new Date(date),
+      startTime,
+      endTime,
+    );
+    ctx.response.status = 201;
+    ctx.response.body = successResponse(agenda, "Agenda created successfully");
+  } catch (error) {
+    const err = error as AppError;
+    ctx.response.status = 400;
+    ctx.response.body = errorResponse(
+      err.error?.code || "AGENDA_CREATION_ERROR",
+      err.error?.message || "Failed to create agenda",
+    );
+  }
 };

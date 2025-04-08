@@ -1,7 +1,8 @@
+import { ObjectId } from "npm:mongodb";
 import db from "../config/db.ts";
 
 export interface AgendaSchema {
-  _id: { $oid: string };
+  _id?: ObjectId;
   date: Date;
   startTime: string;
   endTime: string;
@@ -9,4 +10,7 @@ export interface AgendaSchema {
   patientId: string;
 }
 
-export const Agenda = db.collection<AgendaSchema>("agenda");
+export const Agendas = db.collection<AgendaSchema>("agendas");
+
+// types for the agenda
+export type CreatedAgenda = Omit<AgendaSchema, "_id"> & { _id: string };
