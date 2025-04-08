@@ -1,4 +1,5 @@
 import { Agendas } from "../models/agenda.ts";
+import { Doctors } from "../models/doctor.ts";
 import { Patients } from "../models/patient.ts";
 
 /**
@@ -43,4 +44,20 @@ export const assignAppointmentService = async (
     throw new Error("Failed to assign appointment");
   }
   return { _id: result.insertedId.toString() };
+};
+
+/**
+ * gets all the doctors
+ * @returns the doctors object
+ */
+export const getAllDoctorsService = async () => {
+  const doctors = await Doctors.find(
+    {},
+    {
+      projection: {
+        password: 0,
+      },
+    },
+  ).toArray();
+  return doctors;
 };

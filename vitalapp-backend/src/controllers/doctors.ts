@@ -1,5 +1,8 @@
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { assignAppointmentService } from "../services/doctorService.ts";
+import {
+  assignAppointmentService,
+  getAllDoctorsService,
+} from "../services/doctorService.ts";
 import { successResponse, errorResponse, AppError } from "../utils/response.ts";
 
 // controller to asign an agenda
@@ -24,6 +27,25 @@ export const assignAgendaController = async (ctx: Context): Promise<void> => {
     ctx.response.body = errorResponse(
       err.error?.code || "AGENDA_CREATION_ERROR",
       err.error?.message || "Failed to create agenda",
+    );
+  }
+};
+
+// controller to get all the doctors
+export const getAllDoctorsController = async (ctx: Context): Promise<void> => {
+  try {
+    const doctors = await getAllDoctorsService();
+    ctx.response.status = 200;
+    ctx.response.body = successResponse(
+      doctors,
+      "Doctors fetched successfully",
+    );
+  } catch (error) {
+    const err = error as AppError;
+    ctx.response.status = 500;
+    ctx.response.body = errorResponse(
+      err.error?.code || "GET_DOCTORS_ERROR",
+      err.error?.message || "Failed to fetch doctors",
     );
   }
 };

@@ -13,7 +13,10 @@ import {
   signUpController,
 } from "../controllers/auth.ts";
 import { validateAgenda } from "../middlewares/doctorValidation.ts";
-import { assignAgendaController } from "../controllers/doctors.ts";
+import {
+  assignAgendaController,
+  getAllDoctorsController,
+} from "../controllers/doctors.ts";
 
 const router = new Router();
 
@@ -36,5 +39,6 @@ router.post(
   validateAgenda,
   assignAgendaController,
 );
+router.get("/doc/doctors", jwtDoctorsMiddleware, getAllDoctorsController);
 
 export default router;
