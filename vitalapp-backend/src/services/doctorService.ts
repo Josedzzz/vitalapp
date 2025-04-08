@@ -48,16 +48,25 @@ export const assignAppointmentService = async (
 
 /**
  * gets all the doctors
- * @returns the doctors object
+ * @param page - the page to get the doctors-
+ * @param limit - the limit of each page
+ * @returns the list of doctors
  */
-export const getAllDoctorsService = async () => {
+export const getAllDoctorsService = async (page: number, limit: number) => {
+  const skip = (page - 1) * limit;
   const doctors = await Doctors.find(
     {},
     {
-      projection: {
-        password: 0,
-      },
+      projection: { password: 0 },
+      skip,
+      limit,
     },
   ).toArray();
-  return doctors;
+  const total = await Doctors.countDocuments({});
+  return {
+    doctors,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
 };

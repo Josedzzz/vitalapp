@@ -34,12 +34,20 @@ export const assignAgendaController = async (ctx: Context): Promise<void> => {
 // controller to get all the doctors
 export const getAllDoctorsController = async (ctx: Context): Promise<void> => {
   try {
-    const doctors = await getAllDoctorsService();
+    const url = ctx.request.url;
+    const page = Number(url.searchParams.get("page")) || 1;
+    const limit = Number(url.searchParams.get("limit")) || 10;
+    if (page <= 0 || limit <= 0) {
+      ctx.response.status = 400;
+      ctx.response.body = errorResponse(
+        "INVALID_QUERY",
+        "Page and limit must be greater than 0",
+      );
+      return;
+    }
+    const result = await getAllDoctorsService(page, limit);
     ctx.response.status = 200;
-    ctx.response.body = successResponse(
-      doctors,
-      "Doctors fetched successfully",
-    );
+    ctx.response.body = successResponse(result, "Doctors fetched successfully");
   } catch (error) {
     const err = error as AppError;
     ctx.response.status = 500;
