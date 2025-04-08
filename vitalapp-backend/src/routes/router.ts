@@ -12,10 +12,14 @@ import {
   loginDoctorController,
   signUpController,
 } from "../controllers/auth.ts";
-import { validateAgenda } from "../middlewares/doctorValidation.ts";
+import {
+  validateAgenda,
+  validatePagination,
+} from "../middlewares/doctorValidation.ts";
 import {
   assignAgendaController,
   getAllDoctorsController,
+  getDoctorAppointmentsController,
 } from "../controllers/doctors.ts";
 
 const router = new Router();
@@ -40,5 +44,11 @@ router.post(
   assignAgendaController,
 );
 router.get("/doc/doctors", jwtDoctorsMiddleware, getAllDoctorsController);
+router.get(
+  "/doc/appointments",
+  jwtDoctorsMiddleware,
+  validatePagination,
+  getDoctorAppointmentsController,
+);
 
 export default router;

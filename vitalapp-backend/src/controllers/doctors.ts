@@ -2,6 +2,7 @@ import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import {
   assignAppointmentService,
   getAllDoctorsService,
+  getDoctorAppointmentsService,
 } from "../services/doctorService.ts";
 import { successResponse, errorResponse, AppError } from "../utils/response.ts";
 
@@ -54,6 +55,33 @@ export const getAllDoctorsController = async (ctx: Context): Promise<void> => {
     ctx.response.body = errorResponse(
       err.error?.code || "GET_DOCTORS_ERROR",
       err.error?.message || "Failed to fetch doctors",
+    );
+  }
+};
+
+// controller to get all the appointments of a doctor
+export const getDoctorAppointmentsController = async (
+  ctx: Context,
+): Promise<void> => {
+  try {
+    const doctor = ctx.state.doctor;
+    const { page, limit } = ctx.state.pagination;
+    const agendas = await getDoctorAppointmentsService(
+      doctor._id.toString(),
+      page,
+      limit,
+    );
+    ctx.response.status = 200;
+    ctx.response.body = successResponse(
+      agendas,
+      "Appointments retrieved successfully",
+    );
+  } catch (error) {
+    const err = error as AppError;
+    ctx.response.status = 500;
+    ctx.response.body = errorResponse(
+      err.error?.code || "GET_AGENDAS_ERROR",
+      err.error?.message || "Failed to retrieve agendas",
     );
   }
 };
