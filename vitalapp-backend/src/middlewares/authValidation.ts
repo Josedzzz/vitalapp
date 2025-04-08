@@ -92,31 +92,35 @@ export const jwtPatientsMiddleware = async (
   const bearerToken = ctx.request.headers.get("Authorization");
   if (!bearerToken) {
     ctx.response.status = Status.Unauthorized;
-    ctx.response.body = { error: "Unauthorized - No Token" };
+    ctx.response.body = errorResponse("UNAUTHORIZED", "No token provided");
     return;
   }
   const token = bearerToken.split(" ")[1];
   if (!token) {
     ctx.response.status = Status.Unauthorized;
-    ctx.response.body = { error: "Unauthorized - Invalid Token Format" };
+    ctx.response.body = errorResponse("INVALID_TOKEN", "Invalid token format");
     return;
   }
   try {
     const decodedToken = await verifyJwt(token);
-    console.log("Decoded Token:", decodedToken);
     const userId = new ObjectId(decodedToken.sub);
     const patient = await Patients.findOne({ _id: userId });
     if (!patient) {
       ctx.response.status = Status.Unauthorized;
-      ctx.response.body = { error: "Unauthorized - Patient Not Found" };
+      ctx.response.body = errorResponse(
+        "PATIENT_NOT_FOUND",
+        "Patient not found",
+      );
       return;
     }
-    ctx.state.patient = patient;
     await next();
   } catch (error) {
     console.error("JWT Verification Error:", error);
     ctx.response.status = Status.Unauthorized;
-    ctx.response.body = { error: "Invalid Token" };
+    ctx.response.body = errorResponse(
+      "INVALID_TOKEN",
+      "Invalid or expired token",
+    );
   }
 };
 
@@ -164,13 +168,13 @@ export const jwtDoctorsMiddleware = async (
   const bearerToken = ctx.request.headers.get("Authorization");
   if (!bearerToken) {
     ctx.response.status = Status.Unauthorized;
-    ctx.response.body = { error: "Unauthorized - No Token" };
+    ctx.response.body = errorResponse("UNAUTHORIZED", "No token provided");
     return;
   }
   const token = bearerToken.split(" ")[1];
   if (!token) {
     ctx.response.status = Status.Unauthorized;
-    ctx.response.body = { error: "Unauthorized - Invalid Token Format" };
+    ctx.response.body = errorResponse("INVALID_TOKEN", "Invalid token format");
     return;
   }
   try {
@@ -179,7 +183,7 @@ export const jwtDoctorsMiddleware = async (
     const doctor = await Doctors.findOne({ _id: doctorId });
     if (!doctor) {
       ctx.response.status = Status.Unauthorized;
-      ctx.response.body = { error: "Unauthorized - Doctor Not Found" };
+      ctx.response.body = errorResponse("DOCTOR_NOT_FOUND", "Doctor not found");
       return;
     }
     ctx.state.doctor = doctor;
@@ -187,6 +191,9 @@ export const jwtDoctorsMiddleware = async (
   } catch (error) {
     console.error("JWT Verification Error:", error);
     ctx.response.status = Status.Unauthorized;
-    ctx.response.body = { error: "Invalid Token" };
+    ctx.response.body = errorResponse(
+      "INVALID_TOKEN",
+      "Invalid or expired token",
+    );
   }
 };
