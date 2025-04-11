@@ -26,7 +26,10 @@ import {
   getDiseaseByIdController,
   getDoctorAppointmentsController,
 } from "../controllers/doctors.ts";
-import { getPatientInfoController } from "../controllers/patients.ts";
+import {
+  getPatientAgendasController,
+  getPatientInfoController,
+} from "../controllers/patients.ts";
 
 const router = new Router();
 
@@ -72,5 +75,11 @@ router.post(
 
 // patient routes
 router.get("/patient/me", jwtPatientsMiddleware, getPatientInfoController);
+router.get(
+  "/patient/agenda",
+  jwtPatientsMiddleware,
+  validatePagination,
+  getPatientAgendasController,
+);
 
 export default router;
