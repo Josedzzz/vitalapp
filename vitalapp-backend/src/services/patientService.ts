@@ -2,6 +2,7 @@ import { ObjectId } from "npm:mongodb";
 import { Patients } from "../models/patient.ts";
 import { Agendas } from "../models/agenda.ts";
 import { Diagnosis } from "../models/diagnosis.ts";
+import { DiseaseSchema } from "../models/disease.ts";
 
 /**
  * get a patient info by the id of it
@@ -58,4 +59,12 @@ export const getPatientDiagnosisService = async (
     .limit(limit)
     .toArray();
   return diagnosis;
+};
+
+/**
+ * get the disease info
+ * @returns the obtained disease
+ */
+export const getDiseaseByIdPatientService = (disease: DiseaseSchema) => {
+  return disease;
 };

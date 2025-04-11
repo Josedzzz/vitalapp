@@ -1,6 +1,7 @@
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { AppError, errorResponse, successResponse } from "../utils/response.ts";
 import {
+  getDiseaseByIdPatientService,
   getPatientAgendasService,
   getPatientDiagnosisService,
 } from "../services/patientService.ts";
@@ -72,4 +73,12 @@ export const getPatientDiagnosisController = async (
       err.error?.message || "Failed to retrieve agendas",
     );
   }
+};
+
+// gets the disease info for a patient
+export const getDiseaseByIdPatientController = (ctx: Context) => {
+  const disease = ctx.state.disease;
+  const data = getDiseaseByIdPatientService(disease);
+  ctx.response.status = 200;
+  ctx.response.body = successResponse(data, "Disease retrieved successfully");
 };
