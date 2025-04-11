@@ -28,11 +28,15 @@ import {
 } from "../controllers/doctors.ts";
 import {
   getDiseaseByIdPatientController,
+  getDoctorByIdController,
   getPatientAgendasController,
   getPatientDiagnosisController,
   getPatientInfoController,
 } from "../controllers/patients.ts";
-import { validateDiseaseIdPatientMiddleware } from "../middlewares/patientValidation.ts";
+import {
+  validateDiseaseIdPatientMiddleware,
+  validateDoctorIdMiddleware,
+} from "../middlewares/patientValidation.ts";
 
 const router = new Router();
 
@@ -95,6 +99,12 @@ router.get(
   jwtPatientsMiddleware,
   validateDiseaseIdPatientMiddleware,
   getDiseaseByIdPatientController,
+);
+router.get(
+  "/patient/doctors/:id",
+  jwtPatientsMiddleware,
+  validateDoctorIdMiddleware,
+  getDoctorByIdController,
 );
 
 export default router;

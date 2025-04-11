@@ -3,6 +3,7 @@ import { Patients } from "../models/patient.ts";
 import { Agendas } from "../models/agenda.ts";
 import { Diagnosis } from "../models/diagnosis.ts";
 import { DiseaseSchema } from "../models/disease.ts";
+import { Doctors } from "../models/doctor.ts";
 
 /**
  * get a patient info by the id of it
@@ -67,4 +68,22 @@ export const getPatientDiagnosisService = async (
  */
 export const getDiseaseByIdPatientService = (disease: DiseaseSchema) => {
   return disease;
+};
+
+/**
+ * get the doctor info
+ * @returns the doctor info
+ */
+export const getDoctorByIdService = async (doctorId: string) => {
+  try {
+    const objectId = new ObjectId(doctorId);
+    const doctor = await Doctors.findOne({ _id: objectId });
+    if (!doctor) return null;
+    const { _id, password, ...doctorWithoutSensitiveInfo } = doctor;
+    console.log(password);
+    return doctorWithoutSensitiveInfo;
+  } catch (error) {
+    console.error("Error retrieving the doctor:", error);
+    return null;
+  }
 };

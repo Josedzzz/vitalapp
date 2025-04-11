@@ -6,6 +6,7 @@ import {
 import { ObjectId } from "npm:mongodb";
 import { errorResponse } from "../utils/response.ts";
 import { Diseases } from "../models/disease.ts";
+import { Doctors } from "../models/doctor.ts";
 
 // middleware to validate the pagination
 export const validatePagination = async (
@@ -47,5 +48,26 @@ export const validateDiseaseIdPatientMiddleware = async (
     return;
   }
   ctx.state.disease = disease;
+  await next();
+};
+
+// middleware to validate the doctor id
+export const validateDoctorIdMiddleware = async (
+  ctx: RouterContext<"/patient/doctors/:id">,
+  next: () => Promise<unknown>,
+) => {
+  const { id } = ctx.params;
+  if (!id || !ObjectId.isValid(id)) {
+    ctx.response.status = Status.BadRequest;
+    ctx.response.body = errorResponse("INVALID_ID", "Invalid disease ID");
+    return;
+  }
+  const doctor = await Doctors.findOne({ _id: new ObjectId(id) });
+  if (!doctor) {
+    ctx.response.status = Status.NotFound;
+    ctx.response.body = errorResponse("DOCTOR_NOT_FOUND", "Doctor not found");
+    return;
+  }
+  ctx.state.doctorId = doctor._id;
   await next();
 };

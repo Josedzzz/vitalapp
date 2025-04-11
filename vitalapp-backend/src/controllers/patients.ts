@@ -4,6 +4,7 @@ import {
   getDiseaseByIdPatientService,
   getPatientAgendasService,
   getPatientDiagnosisService,
+  getDoctorByIdService,
 } from "../services/patientService.ts";
 
 // gets the patient info
@@ -81,4 +82,24 @@ export const getDiseaseByIdPatientController = (ctx: Context) => {
   const data = getDiseaseByIdPatientService(disease);
   ctx.response.status = 200;
   ctx.response.body = successResponse(data, "Disease retrieved successfully");
+};
+
+// gets the info of a doctor
+export const getDoctorByIdController = async (ctx: Context) => {
+  const docId = ctx.state.doctorId;
+  const data = await getDoctorByIdService(docId);
+  console.log(data);
+  if (!data) {
+    ctx.response.status = 404;
+    ctx.response.body = errorResponse(
+      "GET_DOCTOR_ERROR",
+      "Failed to retrive the doctor info",
+    );
+    return;
+  }
+  ctx.response.status = 200;
+  ctx.response.body = {
+    success: true,
+    data: data,
+  };
 };
