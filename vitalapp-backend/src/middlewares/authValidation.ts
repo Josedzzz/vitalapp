@@ -113,6 +113,7 @@ export const jwtPatientsMiddleware = async (
       );
       return;
     }
+    ctx.state.patient = patient;
     await next();
   } catch (error) {
     console.error("JWT Verification Error:", error);

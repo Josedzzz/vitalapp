@@ -1,30 +1,16 @@
-import { Patients, PatientSchema } from "../models/patient.ts";
-import { ObjectId } from "https://deno.land/x/mongo@v0.31.2/mod.ts";
+import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
-// insert the patient data on the db
-export const createPatient = async (patientData: PatientSchema) => {
-  return await Patients.insertOne(patientData);
-};
-
-// gets all the patients
-export const getPatients = async () => {
-  return await Patients.find().toArray();
-};
-
-// gets a patient by the id
-export const getPatientById = async (id: string) => {
-  return await Patients.findOne({ _id: new ObjectId(id) });
-};
-
-// udpate a patient by the id
-export const updatePatient = async (id: string, patientData: PatientSchema) => {
-  return await Patients.updateOne(
-    { _id: new ObjectId(id) },
-    { $set: patientData },
-  );
-};
-
-// delete a patient by the id
-export const deletePatient = async (id: string) => {
-  return await Patients.deleteOne({ _id: new ObjectId(id) });
+// gets the patient info
+export const getPatientInfoController = (ctx: Context) => {
+  const patient = ctx.state.patient;
+  if (!patient) {
+    ctx.response.status = 404;
+    ctx.response.body = { error: "Patient not found" };
+    return;
+  }
+  ctx.response.status = 200;
+  ctx.response.body = {
+    success: true,
+    data: patient,
+  };
 };
