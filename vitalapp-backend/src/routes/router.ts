@@ -18,6 +18,7 @@ import {
 } from "../middlewares/doctorValidation.ts";
 import {
   assignAgendaController,
+  getAllDiseasesController,
   getAllDoctorsController,
   getDoctorAppointmentsController,
 } from "../controllers/doctors.ts";
@@ -50,5 +51,6 @@ router.get(
   validatePagination,
   getDoctorAppointmentsController,
 );
+router.get("/doc/diseases", jwtDoctorsMiddleware, getAllDiseasesController);
 
 export default router;

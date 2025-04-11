@@ -1,6 +1,7 @@
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import {
   assignAppointmentService,
+  getAllDiseasesService,
   getAllDoctorsService,
   getDoctorAppointmentsService,
 } from "../services/doctorService.ts";
@@ -84,4 +85,14 @@ export const getDoctorAppointmentsController = async (
       err.error?.message || "Failed to retrieve agendas",
     );
   }
+};
+
+// controller to gel all the diseases
+export const getAllDiseasesController = async (ctx: Context) => {
+  const diseases = await getAllDiseasesService();
+  ctx.response.status = 200;
+  ctx.response.body = successResponse(
+    diseases,
+    "Diseases retrieved successfully",
+  );
 };
