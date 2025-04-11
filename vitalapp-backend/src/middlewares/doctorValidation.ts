@@ -1,8 +1,13 @@
-import { Context, Status } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import {
+  Context,
+  RouterContext,
+  Status,
+} from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { errorResponse } from "../utils/response.ts";
 import { Doctors } from "../models/doctor.ts";
 import { ObjectId } from "npm:mongodb";
+import { Diseases } from "../models/disease.ts";
 
 // validates the startTime is before the endTime
 const isStartBeforeEnd = (start: string, end: string): boolean => {
@@ -70,5 +75,26 @@ export const validatePagination = async (
     return;
   }
   ctx.state.pagination = { page, limit };
+  await next();
+};
+
+// middleware to validate a disease
+export const validateDiseaseIdMiddleware = async (
+  ctx: RouterContext<"/doc/diseases/:id">,
+  next: () => Promise<unknown>,
+) => {
+  const { id } = ctx.params;
+  if (!id || !ObjectId.isValid(id)) {
+    ctx.response.status = Status.BadRequest;
+    ctx.response.body = errorResponse("INVALID_ID", "Invalid disease ID");
+    return;
+  }
+  const disease = await Diseases.findOne({ _id: new ObjectId(id) });
+  if (!disease) {
+    ctx.response.status = Status.NotFound;
+    ctx.response.body = errorResponse("DISEASE_NOT_FOUND", "Disease not found");
+    return;
+  }
+  ctx.state.disease = disease;
   await next();
 };

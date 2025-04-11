@@ -1,5 +1,5 @@
 import { Agendas } from "../models/agenda.ts";
-import { Diseases } from "../models/disease.ts";
+import { Diseases, DiseaseSchema } from "../models/disease.ts";
 import { Doctors } from "../models/doctor.ts";
 import { Patients } from "../models/patient.ts";
 
@@ -102,4 +102,12 @@ export const getDoctorAppointmentsService = async (
 export const getAllDiseasesService = async () => {
   const diseases = await Diseases.find({}).toArray();
   return diseases;
+};
+
+/**
+ * get the disease info
+ * @returns the obtained disease
+ */
+export const getDiseaseByIdService = (disease: DiseaseSchema) => {
+  return disease;
 };

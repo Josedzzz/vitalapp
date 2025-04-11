@@ -3,6 +3,7 @@ import {
   assignAppointmentService,
   getAllDiseasesService,
   getAllDoctorsService,
+  getDiseaseByIdService,
   getDoctorAppointmentsService,
 } from "../services/doctorService.ts";
 import { successResponse, errorResponse, AppError } from "../utils/response.ts";
@@ -95,4 +96,12 @@ export const getAllDiseasesController = async (ctx: Context) => {
     diseases,
     "Diseases retrieved successfully",
   );
+};
+
+// controller to get a disease base on the id
+export const getDiseaseByIdController = (ctx: Context) => {
+  const disease = ctx.state.disease;
+  const data = getDiseaseByIdService(disease);
+  ctx.response.status = 200;
+  ctx.response.body = successResponse(data, "Disease retrieved successfully");
 };
