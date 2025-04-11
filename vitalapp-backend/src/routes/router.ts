@@ -28,6 +28,7 @@ import {
 } from "../controllers/doctors.ts";
 import {
   getPatientAgendasController,
+  getPatientDiagnosisController,
   getPatientInfoController,
 } from "../controllers/patients.ts";
 
@@ -80,6 +81,12 @@ router.get(
   jwtPatientsMiddleware,
   validatePagination,
   getPatientAgendasController,
+);
+router.get(
+  "/patient/diagnosis",
+  jwtPatientsMiddleware,
+  validatePagination,
+  getPatientDiagnosisController,
 );
 
 export default router;

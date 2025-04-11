@@ -1,6 +1,7 @@
 import { ObjectId } from "npm:mongodb";
 import { Patients } from "../models/patient.ts";
 import { Agendas } from "../models/agenda.ts";
+import { Diagnosis } from "../models/diagnosis.ts";
 
 /**
  * get a patient info by the id of it
@@ -37,4 +38,24 @@ export const getPatientAgendasService = async (
     .limit(limit)
     .toArray();
   return agendas;
+};
+
+/**
+ * gets all the patient diagnosis
+ * @param patientId - the id of the patient
+ * @param page - the page to get
+ * @param limit - the limit of each page
+ * @returns the list of patient diagnosis
+ */
+export const getPatientDiagnosisService = async (
+  patientId: string,
+  page: number,
+  limit: number,
+) => {
+  const skip = (page - 1) * limit;
+  const diagnosis = await Diagnosis.find({ patientId: patientId })
+    .skip(skip)
+    .limit(limit)
+    .toArray();
+  return diagnosis;
 };
