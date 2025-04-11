@@ -1,5 +1,6 @@
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import {
+  addDiagnosisService,
   assignAppointmentService,
   getAllDiseasesService,
   getAllDoctorsService,
@@ -104,4 +105,21 @@ export const getDiseaseByIdController = (ctx: Context) => {
   const data = getDiseaseByIdService(disease);
   ctx.response.status = 200;
   ctx.response.body = successResponse(data, "Disease retrieved successfully");
+};
+
+// controller to add a diagnosis
+export const addDiagnosisController = async (ctx: Context) => {
+  try {
+    const data = ctx.state.validatedBody;
+    const inserted = await addDiagnosisService(data);
+    ctx.response.status = 200;
+    ctx.response.body = successResponse({ _id: inserted }, "Diagnosis added");
+  } catch (error) {
+    const err = error as AppError;
+    ctx.response.status = 500;
+    ctx.response.body = errorResponse(
+      err.error?.code || "PUT_DIAGNOSIS_ERROR",
+      err.error?.message || "Failed to add the diagnosis",
+    );
+  }
 };

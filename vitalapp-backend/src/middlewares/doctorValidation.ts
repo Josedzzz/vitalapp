@@ -98,3 +98,28 @@ export const validateDiseaseIdMiddleware = async (
   ctx.state.disease = disease;
   await next();
 };
+
+// basic validation for the diagnosis schema
+const diagnosisSchema = z.object({
+  patientId: z.string().min(1),
+  agendaId: z.string().min(1),
+  description: z.string().min(1),
+  diseaseId: z.array(z.string().min(1)).min(1),
+});
+
+// middleware to validate the diagnosis
+export const validateDiagnosisMiddleware = async (
+  ctx: Context,
+  next: () => Promise<unknown>,
+) => {
+  const body = await ctx.request.body({ type: "json" }).value;
+  const result = diagnosisSchema.safeParse(body);
+  if (!result.success) {
+    const message = result.error.errors[0].message;
+    ctx.response.status = Status.BadRequest;
+    ctx.response.body = errorResponse("VALIDATION_ERROR", message);
+    return;
+  }
+  ctx.state.validatedBody = result.data;
+  await next();
+};

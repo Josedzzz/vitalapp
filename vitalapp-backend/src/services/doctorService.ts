@@ -1,4 +1,5 @@
 import { Agendas } from "../models/agenda.ts";
+import { Diagnosis, DiagnosisSchema } from "../models/diagnosis.ts";
 import { Diseases, DiseaseSchema } from "../models/disease.ts";
 import { Doctors } from "../models/doctor.ts";
 import { Patients } from "../models/patient.ts";
@@ -110,4 +111,13 @@ export const getAllDiseasesService = async () => {
  */
 export const getDiseaseByIdService = (disease: DiseaseSchema) => {
   return disease;
+};
+
+/**
+ * add a diagnosis
+ * @returns the inserted diagnosis
+ * */
+export const addDiagnosisService = async (diagnosis: DiagnosisSchema) => {
+  const insert = await Diagnosis.insertOne(diagnosis);
+  return insert;
 };

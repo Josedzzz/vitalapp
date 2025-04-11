@@ -6,7 +6,7 @@ export interface DiagnosisSchema {
   patientId: string;
   agendaId: string;
   description: string;
-  diseaseId: string;
+  diseaseId: string[];
 }
 
 export const Diagnosis = db.collection<DiagnosisSchema>("diagnosis");

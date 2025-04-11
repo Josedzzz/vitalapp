@@ -14,10 +14,12 @@ import {
 } from "../controllers/auth.ts";
 import {
   validateAgenda,
+  validateDiagnosisMiddleware,
   validateDiseaseIdMiddleware,
   validatePagination,
 } from "../middlewares/doctorValidation.ts";
 import {
+  addDiagnosisController,
   assignAgendaController,
   getAllDiseasesController,
   getAllDoctorsController,
@@ -59,6 +61,12 @@ router.get(
   jwtDoctorsMiddleware,
   validateDiseaseIdMiddleware,
   getDiseaseByIdController,
+);
+router.post(
+  "/doc/diagnosis",
+  jwtDoctorsMiddleware,
+  validateDiagnosisMiddleware,
+  addDiagnosisController,
 );
 
 export default router;
