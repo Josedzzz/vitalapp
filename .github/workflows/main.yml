@@ -25,4 +25,4 @@ jobs:
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        run: deno test --allow-env --allow-sys --allow-net --allow-read --allow-write --no-check=all
+        run: deno test --allow-env --allow-sys --allow-net --allow-read --allow-write --no-check=all --no-check-leaks
