@@ -1,0 +1,37 @@
+# Deno cache
+/deno.lock
+/deno-dir
+
+# Env files
+.env
+.env.*
+
+# Logs
+*.log
+
+# VSCode
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Test coverage or temp files (si usas alguna herramienta en el futuro)
+/coverage
+/tmp
+*.tmp
+
+# Node leftovers (en caso de que tengas tools tipo esbuild, etc.)
+node_modules/
+
+# GitHub Actions temporary files
+*.tsbuildinfo
+
+# Editor/IDE configs
+.idea/
+*.swp
+*.swo
+*.bak
+
+# Zed (ya que usas Zed)
+.zed/
+
