@@ -6,6 +6,7 @@ import {
   getPatientDiagnosisService,
   getDoctorByIdService,
   getAllDoctorsPatientService,
+  assignAppointmentPatientService,
 } from "../services/patientService.ts";
 
 // gets the patient info
@@ -128,6 +129,32 @@ export const getAllDoctorsController = async (ctx: Context): Promise<void> => {
     ctx.response.body = errorResponse(
       err.error?.code || "GET_DOCTORS_ERROR",
       err.error?.message || "Failed to fetch doctors",
+    );
+  }
+};
+
+// controller to asign an agenda
+export const assignAgendaController = async (ctx: Context): Promise<void> => {
+  try {
+    const { patientId, doctorId, date, startTime, endTime } =
+      await ctx.request.body({
+        type: "json",
+      }).value;
+    const agenda = await assignAppointmentPatientService(
+      patientId,
+      doctorId,
+      new Date(date),
+      startTime,
+      endTime,
+    );
+    ctx.response.status = 201;
+    ctx.response.body = successResponse(agenda, "Agenda created successfully");
+  } catch (error) {
+    const err = error as AppError;
+    ctx.response.status = 400;
+    ctx.response.body = errorResponse(
+      err.error?.code || "AGENDA_CREATION_ERROR",
+      err.error?.message || "Failed to create agenda",
     );
   }
 };

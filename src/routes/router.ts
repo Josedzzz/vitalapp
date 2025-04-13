@@ -107,5 +107,11 @@ router.get(
   getDoctorByIdController,
 );
 router.get("/patient/doctors", jwtPatientsMiddleware, getAllDoctorsController);
+router.post(
+  "/patient/agenda",
+  jwtPatientsMiddleware,
+  validateAgenda,
+  assignAgendaController,
+);
 
 export default router;

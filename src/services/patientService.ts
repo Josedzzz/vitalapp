@@ -115,3 +115,33 @@ export const getAllDoctorsPatientService = async (
     totalPages: Math.ceil(total / limit),
   };
 };
+
+/**
+ * assigns an appointment to a patient
+ * @param email - email of the patient
+ * @param doctorId - the ID of the doctor assigning the appointment
+ * @param date - the date of the appointment (yyyy-mm-dd)
+ * @param startTime - start time (HH:mm)
+ * @param endTime - end time (HH:mm)
+ * @returns the created agenda entry
+ */
+export const assignAppointmentPatientService = async (
+  patientId: string,
+  doctorId: string,
+  date: Date,
+  startTime: string,
+  endTime: string,
+): Promise<{ _id: string }> => {
+  const agendaToInsert = {
+    date,
+    startTime,
+    endTime,
+    doctorId,
+    patientId,
+  };
+  const result = await Agendas.insertOne(agendaToInsert);
+  if (!result) {
+    throw new Error("Failed to assign appointment");
+  }
+  return { _id: result.insertedId.toString() };
+};
