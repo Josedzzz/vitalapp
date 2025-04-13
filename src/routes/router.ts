@@ -106,5 +106,6 @@ router.get(
   validateDoctorIdMiddleware,
   getDoctorByIdController,
 );
+router.get("/patient/doctors", jwtPatientsMiddleware, getAllDoctorsController);
 
 export default router;

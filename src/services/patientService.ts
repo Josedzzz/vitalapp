@@ -87,3 +87,31 @@ export const getDoctorByIdService = async (doctorId: string) => {
     return null;
   }
 };
+
+/**
+ * gets all the doctors
+ * @param page - the page to get the doctors
+ * @param limit - the limit of each page
+ * @returns the list of doctors
+ */
+export const getAllDoctorsPatientService = async (
+  page: number,
+  limit: number,
+) => {
+  const skip = (page - 1) * limit;
+  const doctors = await Doctors.find(
+    {},
+    {
+      projection: { password: 0 },
+      skip,
+      limit,
+    },
+  ).toArray();
+  const total = await Doctors.countDocuments({});
+  return {
+    doctors,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
+};
